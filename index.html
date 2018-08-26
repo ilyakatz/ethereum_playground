@@ -42,7 +42,7 @@
 
       web3.eth.defaultAccount = web3.eth.accounts[0];
 
-      var CoursetroContract = web3.eth.contract([
+      var abi = [
 	{
 		"anonymous": false,
 		"inputs": [
@@ -102,9 +102,10 @@
 		"stateMutability": "view",
 		"type": "function"
 	}
-]);
+];
+      var CoursetroContract = web3.eth.contract(abi);
 
-      var Coursetro = CoursetroContract.at('0x738a1f8a39ce7b19004b260e144576fb7c814354');
+      var Coursetro = CoursetroContract.at('0x2171299e5eb6d9f9a839e7c1e086ee839fac9ab9');
       console.log(Coursetro);
 
       // Coursetro.getInstructor(function(error, result){
@@ -128,7 +129,14 @@
 
       $("#button").click(function(){
         $("#loader").show();
-        Coursetro.setInstructor($("#name").val(), $("#age").val());
+        Coursetro.setInstructor(
+          $("#name").val(),
+          $("#age").val(), (err, res)=> {
+            if(err){
+              $("#loader").hide();
+              console.log(err);
+            }
+          });
       });
     </script>
 
