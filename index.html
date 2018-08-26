@@ -42,7 +42,9 @@
 
       web3.eth.defaultAccount = web3.eth.accounts[0];
 
-      var abi = [
+      var contractAddress = "0xfe9e5abd77fb9e4a832a2f394244f2627049b434";
+      var abi =
+      [
 	{
 		"anonymous": false,
 		"inputs": [
@@ -102,10 +104,11 @@
 		"stateMutability": "view",
 		"type": "function"
 	}
-];
+]
+;
       var CoursetroContract = web3.eth.contract(abi);
 
-      var Coursetro = CoursetroContract.at('0x2171299e5eb6d9f9a839e7c1e086ee839fac9ab9');
+      var Coursetro = CoursetroContract.at(contractAddress);
       console.log(Coursetro);
 
       // Coursetro.getInstructor(function(error, result){
