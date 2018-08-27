@@ -2,6 +2,7 @@
 
 ```
 yarn install
+npm install -g ethereumjs-testrpc
 ```
 
 # Running
