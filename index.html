@@ -15,12 +15,18 @@
     <div class="container">
 
         <h1>Coursetro Instructor</h1>
+        <span id="instructors-count"></span>
 
         <h2 id="instructor"></h2>
+        <span id="ins-transaction"></span>
+        <hr/>
         <img id="loader" src="spinner.gif"></img>
 
-        <label for="name" class="col-lg-2 control-label">Instructor Name</label>
-        <input id="name" type="text">
+        <label for="fname" class="col-lg-2 control-label">Instructor First Name</label>
+        <input id="fname" type="text">
+
+        <label for="lname" class="col-lg-2 control-label">Instructor Last Name</label>
+        <input id="lname" type="text">
 
         <label for="name" class="col-lg-2 control-label">Instructor Age</label>
         <input id="age" type="text">
@@ -33,45 +39,91 @@
     <script src="./dist/jquery-3.2.1.slim.min.js"></script>
 
     <script>
-      //if (typeof web3 !== 'undefined') {
-      //  web3 = new Web3(web3.currentProvider);
-      //} else {
+      if (typeof web3 !== 'undefined') {
+        web3 = new Web3(web3.currentProvider);
+      } else {
         // set the provider you want from Web3.providers
         web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-      //}
+      }
 
       web3.eth.defaultAccount = web3.eth.accounts[0];
 
-      var contractAddress = "0x0b0c1b6fbc075f99fbdf9db092cdb872880a618f";
+      var contractAddress = "0x2e24140d91500d312b8d0f890feafbc7b67683b1";
       var abi =
       [
 	{
-		"anonymous": false,
+		"constant": true,
 		"inputs": [
 			{
-				"indexed": false,
-				"name": "name",
-				"type": "string"
+				"name": "_address",
+				"type": "address"
+			}
+		],
+		"name": "getInstructor",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
 			},
 			{
-				"indexed": false,
-				"name": "age",
+				"name": "",
+				"type": "bytes16"
+			},
+			{
+				"name": "",
+				"type": "bytes16"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getInstructors",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address[]"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "countInstructors",
+		"outputs": [
+			{
+				"name": "",
 				"type": "uint256"
 			}
 		],
-		"name": "Instructor",
-		"type": "event"
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
 	},
 	{
 		"constant": false,
 		"inputs": [
 			{
-				"name": "_name",
-				"type": "string"
+				"name": "_address",
+				"type": "address"
 			},
 			{
 				"name": "_age",
 				"type": "uint256"
+			},
+			{
+				"name": "_fname",
+				"type": "bytes16"
+			},
+			{
+				"name": "_lname",
+				"type": "bytes16"
 			}
 		],
 		"name": "setInstructor",
@@ -81,28 +133,45 @@
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
 		"constant": true,
-		"inputs": [],
-		"name": "getInstructor",
-		"outputs": [
-			{
-				"name": "",
-				"type": "string"
-			},
+		"inputs": [
 			{
 				"name": "",
 				"type": "uint256"
 			}
 		],
+		"name": "instructorAccounts",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
 		"payable": false,
 		"stateMutability": "view",
 		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "fName",
+				"type": "bytes16"
+			},
+			{
+				"indexed": false,
+				"name": "lName",
+				"type": "bytes16"
+			},
+			{
+				"indexed": false,
+				"name": "age",
+				"type": "uint256"
+			}
+		],
+		"name": "instructorInfo",
+		"type": "event"
 	}
 ]
 ;
@@ -120,22 +189,35 @@
       // })
 
       $("#loader").hide();
-      var instructorEvent = Coursetro.Instructor();
+      var instructorEvent = Coursetro.instructorInfo({},'latest');
       instructorEvent.watch(function(error, result){
         if(!error){
-          $("#loader").hide();
-          $("#instructor").html(result.args.name + "(" + result.args.age + ")");
+          if(result.blockHash !== $("ins-transaction").val()) {
+            $("#loader").hide();
+          }
+          $("ins-transaction").html(result.blockHash);
+          var fname = web3.toAscii(result.args.fName);
+          var lname = web3.toAscii(result.args.lName);
+          $("#instructor").html(fname + " " + lname + "(" + result.args.age + ")");
         } else {
           $("#loader").hide();
           console.log(error);
         }
       });
 
+      Coursetro.countInstructors((err, res) =>{
+        if(res){
+          $("#countIns").html(res.c + "Instructors");
+        }
+      });
+
       $("#button").click(function(){
         $("#loader").show();
         Coursetro.setInstructor(
-          $("#name").val(),
-          $("#age").val(), (err, res)=> {
+          web3.eth.defaultAccount,
+          $("#age").val(),
+          $("#fname").val(),
+          $("#lname").val(), (err, res)=> {
             if(err){
               $("#loader").hide();
               console.log(err);

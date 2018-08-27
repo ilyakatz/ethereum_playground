@@ -11,5 +11,9 @@ npm install -g ethereumjs-testrpc
 testrpc
 ```
 
+```
+yarn run dev
+```
+
 # Configuration
 
