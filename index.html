@@ -30,19 +30,19 @@
 
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="./dist/jquery-3.2.1.slim.min.js"></script>
 
     <script>
-      if (typeof web3 !== 'undefined') {
-        web3 = new Web3(web3.currentProvider);
-      } else {
+      //if (typeof web3 !== 'undefined') {
+      //  web3 = new Web3(web3.currentProvider);
+      //} else {
         // set the provider you want from Web3.providers
         web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-      }
+      //}
 
       web3.eth.defaultAccount = web3.eth.accounts[0];
 
-      var contractAddress = "0xfe9e5abd77fb9e4a832a2f394244f2627049b434";
+      var contractAddress = "0x0b0c1b6fbc075f99fbdf9db092cdb872880a618f";
       var abi =
       [
 	{
@@ -119,6 +119,7 @@
       //   }
       // })
 
+      $("#loader").hide();
       var instructorEvent = Coursetro.Instructor();
       instructorEvent.watch(function(error, result){
         if(!error){
