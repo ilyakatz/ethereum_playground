@@ -46,7 +46,10 @@
         web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
       }
 
-      web3.eth.defaultAccount = web3.eth.accounts[0];
+			web3.eth.defaultAccount = web3.eth.accounts[0];
+			balance = web3.eth.getBalance(web3.eth.defaultAccount);
+			console.log("Balance is ");
+			console.log(balance)
 
       var contractAddress = "0x2e24140d91500d312b8d0f890feafbc7b67683b1";
       var abi =
@@ -216,8 +219,9 @@
         Coursetro.setInstructor(
           web3.eth.defaultAccount,
           $("#age").val(),
-          $("#fname").val(),
-          $("#lname").val(), (err, res)=> {
+					$("#fname").val(),
+          $("#lname").val(),
+					{ gas: 3000000 }, (err, res)=> {
             if(err){
               $("#loader").hide();
               console.log(err);
